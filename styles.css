@@ -354,6 +354,15 @@ textarea { resize: vertical; }
 .footer a:visited { color: #ff80ff; }
 .footer p { margin: 4px 0; }
 
+/* ---------- honeypot (hidden from humans) ---------- */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* ---------- mobile ---------- */
 @media (max-width: 560px) {
   .logo { font-size: 32px; }

@@ -4,6 +4,8 @@
   const avatarInput = document.getElementById('avatar');
   const msgInput = document.getElementById('msg');
   const favInput = document.getElementById('fav');
+  const hpInput = document.getElementById('website');
+  const submitBtn = document.getElementById('submitBtn');
 
   const unamePreview = document.querySelector('#preview .uname');
   const avatarPreview = document.getElementById('avatarPreview');
@@ -15,12 +17,11 @@
   const yearEl = document.getElementById('year');
   const hitCounter = document.getElementById('hitCounter');
 
-  const STORAGE_KEY = 'monobloc_fanbook_v1';
   const HITS_KEY = 'monobloc_hits_v1';
 
   yearEl.textContent = new Date().getFullYear();
 
-  // --- fake visitor counter ---
+  // --- local-only visitor counter (cosmetic) ---
   let hits = parseInt(localStorage.getItem(HITS_KEY) || '0', 10);
   hits += 1;
   localStorage.setItem(HITS_KEY, String(hits));
@@ -75,20 +76,9 @@
   usernameInput.addEventListener('input', updateUsernamePreview);
   msgInput.addEventListener('input', updateShoutPreview);
 
-  // --- fanbook storage ---
-  function loadFans() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    } catch (e) { return []; }
-  }
-
-  function saveFans(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  }
-
-  function renderFans() {
-    const fans = loadFans();
-    if (!fans.length) {
+  // --- render helpers ---
+  function renderFans(fans) {
+    if (!fans || !fans.length) {
       fanList.innerHTML = '<p class="empty-note">No fans yet. Be the first!</p>';
       return;
     }
@@ -102,6 +92,7 @@
         img.className = 'mini-avatar';
         img.src = f.avatar;
         img.alt = f.username;
+        img.loading = 'lazy';
         entry.appendChild(img);
       } else {
         const ph = document.createElement('div');
@@ -128,48 +119,78 @@
     });
   }
 
-  // --- submit ---
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const username = usernameInput.value.replace(/\s+/g, '_').trim();
-    if (username.length < 2) {
-      alert('pick a username (2+ chars).');
-      usernameInput.focus();
-      return;
+  // --- API ---
+  async function fetchFans() {
+    try {
+      const r = await fetch('/api/fans', { cache: 'no-store' });
+      if (!r.ok) throw new Error('bad response');
+      const data = await r.json();
+      renderFans(data.fans || []);
+    } catch (err) {
+      fanList.innerHTML = '<p class="empty-note">(could not load fanbook)</p>';
     }
+  }
 
-    const fans = loadFans();
-    if (fans.some(function (f) { return f.username.toLowerCase() === username.toLowerCase(); })) {
-      alert('that username is taken! try another.');
-      usernameInput.focus();
-      return;
-    }
-
-    const today = new Date();
-    const joined = today.toISOString().slice(0, 10);
-
-    fans.push({
-      username: username,
-      avatar: currentAvatarDataUrl || '',
-      fav: favInput.value,
-      message: msgInput.value.trim(),
-      joined: joined
+  async function submitFan(payload) {
+    const r = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
-    saveFans(fans);
+    let data = {};
+    try { data = await r.json(); } catch { /* ignore */ }
+    if (!r.ok) {
+      throw new Error(data.error || ('HTTP ' + r.status));
+    }
+    return data;
+  }
 
-    joinDate.textContent = joined;
-    renderFans();
+  // --- submit ---
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-    alert('welcome to the fan club, ' + username + '!');
-    form.reset();
-    currentAvatarDataUrl = '';
-    showAvatar('');
-    updateUsernamePreview();
-    updateShoutPreview();
+    const username = usernameInput.value.replace(/\s+/g, '_').trim();
+    if (!/^[A-Za-z0-9_-]{2,20}$/.test(username)) {
+      alert('username must be 2-20 chars, letters/numbers/_/- only.');
+      usernameInput.focus();
+      return;
+    }
+
+    submitBtn.disabled = true;
+    const originalLabel = submitBtn.textContent;
+    submitBtn.textContent = 'sending...';
+
+    try {
+      const result = await submitFan({
+        username: username,
+        avatar: currentAvatarDataUrl || '',
+        fav: favInput.value || '',
+        message: msgInput.value.trim(),
+        hp: hpInput ? hpInput.value : '',
+      });
+
+      if (result && result.fan) {
+        joinDate.textContent = result.fan.joined;
+      }
+      alert('welcome to the fan club, ' + username + '!');
+
+      form.reset();
+      currentAvatarDataUrl = '';
+      showAvatar('');
+      updateUsernamePreview();
+      updateShoutPreview();
+
+      await fetchFans();
+    } catch (err) {
+      alert('ERROR: ' + (err.message || 'could not sign up'));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalLabel;
+    }
   });
 
   // initial render
-  renderFans();
+  fetchFans();
   updateUsernamePreview();
   updateShoutPreview();
 })();
