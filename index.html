@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONOBLOC :: Fan Club Sign-Up</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="banner">
+    <div class="marquee">
+      <span>&#9733; WELCOME TO THE OFFICIAL MONOBLOC FAN CLUB &#9733; NEW TOUR DATES COMING SOON &#9733; SIGN THE FANBOOK BELOW &#9733;</span>
+    </div>
+    <h1 class="logo">M O N O B L O C</h1>
+    <p class="tagline">&raquo; official fan club sign-up &laquo;</p>
+  </header>
+
+  <main class="window">
+    <div class="title-bar">
+      <span class="title-bar-text">fanclub_signup.exe</span>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize">_</button>
+        <button aria-label="Maximize">&#9633;</button>
+        <button aria-label="Close">&times;</button>
+      </div>
+    </div>
+
+    <div class="window-body">
+
+      <div class="columns">
+
+        <section class="col form-col">
+          <form id="fanForm" autocomplete="off">
+            <fieldset>
+              <legend>New Fan Registration</legend>
+
+              <p class="field">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username"
+                       maxlength="20" minlength="2" required
+                       placeholder="yr_alias_here">
+                <span class="hint">2-20 characters. no spaces plz.</span>
+              </p>
+
+              <p class="field">
+                <label for="avatar">Profile Picture <em>(optional)</em>:</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*">
+                <span class="hint">.jpg / .png / .gif &mdash; keep it small!</span>
+              </p>
+
+              <p class="field">
+                <label for="fav">Favorite track:</label>
+                <select id="fav" name="fav">
+                  <option value="">-- choose one --</option>
+                  <option>Track 01</option>
+                  <option>Track 02</option>
+                  <option>Track 03</option>
+                  <option>other / all of them</option>
+                </select>
+              </p>
+
+              <p class="field">
+                <label for="msg">Shout-out:</label>
+                <textarea id="msg" name="msg" rows="3" maxlength="140"
+                          placeholder="leave a message for the band..."></textarea>
+              </p>
+
+              <p class="buttons">
+                <button type="submit" class="btn">Sign the Fanbook</button>
+                <button type="reset" class="btn">Clear</button>
+              </p>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="col preview-col">
+          <fieldset>
+            <legend>Live Preview</legend>
+            <div class="profile-card" id="preview">
+              <div class="avatar-frame">
+                <img id="avatarPreview" src="" alt="no pic" onerror="this.style.visibility='hidden'">
+                <span class="no-pic" id="noPic">[ no pic ]</span>
+              </div>
+              <div class="profile-info">
+                <p class="uname">&lt;username&gt;</p>
+                <p class="meta">member since: <span id="joinDate">--</span></p>
+                <p class="shout" id="shoutOut">&ldquo;...&rdquo;</p>
+              </div>
+            </div>
+          </fieldset>
+        </section>
+
+      </div>
+
+      <section class="fanbook">
+        <fieldset>
+          <legend>The Fanbook</legend>
+          <div id="fanList" class="fan-list">
+            <p class="empty-note">No fans yet. Be the first!</p>
+          </div>
+        </fieldset>
+      </section>
+
+    </div>
+
+    <div class="status-bar">
+      <p class="status-bar-field">Visitors: <span id="hitCounter">000001</span></p>
+      <p class="status-bar-field">Best viewed at 800 x 600</p>
+      <p class="status-bar-field blink">&#9733; LIVE &#9733;</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; MONOBLOC <span id="year"></span> &middot; made with &lt;3 and HTML</p>
+    <p><a href="#">home</a> | <a href="#">shows</a> | <a href="#">music</a> | <a href="#">contact</a></p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
