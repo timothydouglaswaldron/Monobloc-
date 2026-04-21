@@ -9,6 +9,9 @@ node_modules/
 # vercel
 .vercel/
 
+# local dev storage
+.data/
+
 # os
 .DS_Store
 Thumbs.db

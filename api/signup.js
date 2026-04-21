@@ -1,30 +1,11 @@
-import { put, head } from '@vercel/blob';
+import { getStorage } from './_storage.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
 
-const FANS_PATH = 'fanbook/fans.json';
 const USERNAME_RE = /^[A-Za-z0-9_-]{2,20}$/;
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 const MAX_MSG = 140;
 const MAX_FAV = 40;
-
-async function loadFans() {
-  const meta = await head(FANS_PATH).catch(() => null);
-  if (!meta) return [];
-  const r = await fetch(meta.url, { cache: 'no-store' });
-  if (!r.ok) return [];
-  try { return await r.json(); } catch { return []; }
-}
-
-async function saveFans(fans) {
-  await put(FANS_PATH, JSON.stringify(fans), {
-    access: 'public',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    cacheControlMaxAge: 0,
-  });
-}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -45,7 +26,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'message too long' });
     }
 
-    const fans = await loadFans();
+    const storage = await getStorage();
+
+    const fans = await storage.getFans();
     if (fans.some(f => f.username.toLowerCase() === username.toLowerCase())) {
       return res.status(409).json({ error: 'that username is taken' });
     }
@@ -64,13 +47,8 @@ export default async function handler(req, res) {
       }
       const ext = (mime.split('/')[1] || 'png').replace('+xml', '').replace('jpeg', 'jpg');
       const safeName = username.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-      const { url } = await put(`avatars/${safeName}.${ext}`, buf, {
-        access: 'public',
-        contentType: mime,
-        addRandomSuffix: true,
-        cacheControlMaxAge: 60 * 60 * 24 * 365,
-      });
-      avatarUrl = url;
+      const result = await storage.putAvatar(`${safeName}.${ext}`, buf, mime);
+      avatarUrl = result.url;
     }
 
     const record = {
@@ -82,7 +60,7 @@ export default async function handler(req, res) {
     };
 
     fans.push(record);
-    await saveFans(fans);
+    await storage.saveFans(fans);
 
     return res.status(200).json({ ok: true, fan: record });
   } catch (err) {
