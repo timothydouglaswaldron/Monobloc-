@@ -283,8 +283,8 @@ a { color: inherit; text-decoration: none; }
   opacity: 0;
   transition: opacity 0.1s ease;
 }
-.media-link:hover::before,
-.media-link:focus-visible::before {
+body:not(.using-kbd) .media-link:hover::before,
+body.using-kbd .media-link:focus-visible::before {
   opacity: 1;
   animation: cursor-blink 1.1s steps(2, jump-none) infinite;
 }
@@ -662,13 +662,22 @@ body { animation: crt-boot 1.2s ease-out forwards; }
   opacity: 0;
   transition: opacity 0.1s ease;
 }
-.demo-track:hover::before,
-.demo-track:focus-visible::before,
+body:not(.using-kbd) .demo-track:hover::before,
+body.using-kbd .demo-track:focus-visible::before,
+body.using-kbd .demo-track.kbd-focus::before,
 .demo-track.is-active::before {
   opacity: 1;
 }
 .demo-track.is-active::before {
   animation: cursor-blink 1.1s steps(2, jump-none) infinite;
+}
+/* Never two hands: when any track is hovered/focused, hide the persistent
+   "now playing" (is-active) hand so only the hovered/focused one shows. */
+.demos__list:has(.demo-track:hover) .demo-track.is-active:not(:hover)::before,
+.demos__list:has(.demo-track:focus-visible) .demo-track.is-active:not(:focus-visible)::before,
+.demos__list:has(.demo-track.kbd-focus) .demo-track.is-active:not(.kbd-focus)::before {
+  opacity: 0;
+  animation: none;
 }
 
 .demo-track {

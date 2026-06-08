@@ -31,15 +31,24 @@
     setSelected(list[next]);
   };
 
-  // Clear keyboard-cursor when user moves the mouse — keep the cursor only
-  // for keyboard navigation, since hover already shows it for media-link.
-  document.addEventListener('mousemove', () => {
+  // Track input mode so only ONE JRPG cursor ever shows: mouse mode reveals the
+  // hover cursor, keyboard mode reveals the focus cursor. Moving the mouse exits
+  // keyboard mode (and clears the keyboard-cursor class).
+  const exitKbd = () => {
+    document.body.classList.remove('using-kbd');
     document.querySelectorAll('.kbd-focus').forEach(n => n.classList.remove('kbd-focus'));
-  }, { once: false, passive: true });
+  };
+  document.addEventListener('mousemove',   exitKbd, { passive: true });
+  document.addEventListener('pointerdown', exitKbd, { passive: true });
 
   document.addEventListener('keydown', (e) => {
     // Don't hijack browser shortcuts
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+    // Any keyboard navigation key → keyboard mode (suppresses hover cursors).
+    if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) {
+      document.body.classList.add('using-kbd');
+    }
 
     switch (e.key) {
       case 'ArrowDown':
