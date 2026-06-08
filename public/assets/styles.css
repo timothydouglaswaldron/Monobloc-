@@ -50,6 +50,15 @@
    only, leaving the rest of the site on PP Mondwest. */
 body.page-demos { --font-display: var(--font-mono); }
 
+/* Admin (demos console): force the entire page onto the mono stack — remap
+   every font role to --font-mono so titles, labels, buttons, track names,
+   serif/ornate bits all render in Proto Mono. Scoped to the admin page only. */
+body.page-admin {
+  --font-display: var(--font-mono);
+  --font-serif-italic: var(--font-mono);
+  --font-ornate: var(--font-mono);
+}
+
 /* --- Reset --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
