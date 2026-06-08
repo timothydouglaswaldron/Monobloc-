@@ -34,7 +34,9 @@
       srcNode = actx.createMediaElementSource(audio);
       analyser = actx.createAnalyser();
       analyser.fftSize = 1024;
-      analyser.smoothingTimeConstant = 0.82;
+      analyser.smoothingTimeConstant = 0.62;   // snappier response
+      analyser.minDecibels = -84;              // widen sensitivity to typical music levels
+      analyser.maxDecibels = -22;
       freq = new Uint8Array(analyser.frequencyBinCount);
       srcNode.connect(analyser);
       analyser.connect(actx.destination);
@@ -80,11 +82,11 @@
         let m = 0;
         for (let b = lo; b < hi; b++) m = Math.max(m, freq[b]);
         sum += m;
-        // perceptual curve + gentle low-end tame / high-end lift
-        let v = Math.pow(m / 255, 0.9);
-        out[c] = Math.min(1, v * 1.25);
+        // perceptual curve — lower exponent lifts quieter bands so more cells dance
+        let v = Math.pow(m / 255, 0.6);
+        out[c] = Math.min(1, v * 1.6);
       }
-      if (sum > 40) return true; // real signal present
+      if (sum > 10) return true; // real signal present
     }
     return false; // caller will synthesise
   };
@@ -147,12 +149,12 @@
       // ease toward target (fast attack, slow release — like a real meter)
       const tv = target[c];
       const cur = levels[c];
-      levels[c] = tv > cur ? cur + (tv - cur) * 0.55 : cur + (tv - cur) * 0.16;
+      levels[c] = tv > cur ? cur + (tv - cur) * 0.78 : cur + (tv - cur) * 0.13;
       const lit = levels[c] * ROWS;
 
       // peak hold (falls slowly)
       if (lit > peaks[c]) peaks[c] = lit;
-      else peaks[c] = Math.max(lit, peaks[c] - 0.09);
+      else peaks[c] = Math.max(lit, peaks[c] - 0.12);
       const peakRow = Math.min(ROWS - 1, Math.floor(peaks[c]));
 
       const cx = ox + c * pitchX;
