@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "name": "monobloc-site",
+  "description": "Serverless function deps only — the public/ frontend is still no-build.",
+  "dependencies": {
+    "@vercel/blob": "^2.4.0"
+  }
+}

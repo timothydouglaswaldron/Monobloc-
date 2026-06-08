@@ -1,0 +1,30 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/tour/",       "destination": "/live/",  "permanent": true },
+    { "source": "/shows/",      "destination": "/live/",  "permanent": true },
+    { "source": "/sign-up/",    "destination": "/",       "permanent": true },
+    { "source": "/store-page/", "destination": "/shop/",  "permanent": true },
+    { "source": "/store/",      "destination": "/shop/",  "permanent": true },
+    { "source": "/merch/",      "destination": "/shop/",  "permanent": true }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/(.*).html",
+      "headers": [
+        { "key": "Cache-Control",        "value": "public, max-age=0, must-revalidate" },
+        { "key": "X-Content-Type-Options","value": "nosniff" },
+        { "key": "Referrer-Policy",       "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}

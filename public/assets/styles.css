@@ -1,0 +1,1131 @@
+/* =========================================================================
+   Monobloc — shared styles
+   Mobile-first, fluid typography + spacing via clamp()
+   Minimal breakpoints: we lean on clamp/flex to avoid jumpy layouts
+   ========================================================================= */
+
+/* --- Fonts (self-hosted) --- */
+@font-face {
+  font-family: 'PP Mondwest';
+  src: url('/assets/fonts/PPMondwest-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Old English Dingbats';
+  src: url('/assets/fonts/OldEnglishDingbats.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-crt: #000;
+  --bg-page: #000;
+  --text: #ffffff;
+  --text-soft: #e4e2ff;
+  --border-faint: rgba(255, 255, 255, 0.12);
+  --shadow-glow: 0 0 12px rgba(255, 255, 255, 0.25), 0 0 40px rgba(140, 160, 255, 0.15);
+
+  --font-display: 'PP Mondwest', 'Courier New', ui-monospace, monospace;
+  --font-ornate: 'Old English Dingbats', 'Old English Text MT', serif;
+  --font-serif-italic: 'Times New Roman', Times, Georgia, serif;
+  /* Monospace used by the Demos notes section (Proto Mono → IBM Plex Mono fallback) */
+  --font-mono: 'Proto Mono', 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+
+  /* Fluid tokens — min, preferred, max */
+  --pad-page: clamp(1rem, 4vw, 2.5rem);
+  --gap-stack: clamp(1rem, 3vw, 2rem);
+  --fs-nav: clamp(1.15rem, 1.6vw + 0.5rem, 1.6rem);
+  --fs-section: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+  --fs-spacer: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem);
+  --fs-link: clamp(1.5rem, 2vw + 0.75rem, 2.25rem);
+  --fs-subtitle: clamp(0.95rem, 0.5vw + 0.8rem, 1.1rem);
+}
+
+/* Demos page: every font is the mono stack (Proto Mono → IBM Plex Mono).
+   Redefining --font-display here cascades to all descendants, so the title,
+   tracklist, navbar, etc. all render in the mono face — scoped to this page
+   only, leaving the rest of the site on PP Mondwest. */
+body.page-demos { --font-display: var(--font-mono); }
+
+/* --- Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-display);
+  color: var(--text);
+  background: var(--bg-page);
+  line-height: 1.4;
+  min-height: 100svh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+
+/* =========================================================================
+   Navbar — shared by /live and /media
+   ========================================================================= */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: clamp(0.5rem, 1vw, 0.75rem) var(--pad-page);
+  background: var(--bg-page);
+}
+
+.navbar__logo {
+  display: block;
+  width: clamp(6rem, 12vw, 10rem);
+  flex-shrink: 0;
+}
+.navbar__logo img { width: 100%; height: auto; }
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+/* Navbar links scaled to 50% of the base nav size */
+.navbar__links .btn-ghost {
+  font-size: clamp(0.575rem, 0.8vw + 0.25rem, 0.8rem);
+}
+
+/* =========================================================================
+   Ghost / terminal-style button
+   ========================================================================= */
+.btn-ghost {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-nav);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text-soft);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  cursor: pointer;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  text-decoration: underline transparent;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  color: var(--text);
+  text-decoration-color: currentColor;
+  outline: none;
+}
+.btn-ghost[aria-current="page"] {
+  color: var(--text);
+  text-decoration-color: currentColor;
+}
+
+/* Keyboard navigation cursor — JS adds .kbd-focus to the element with arrow-key focus */
+.btn-ghost.kbd-focus,
+.product__buy.kbd-focus,
+.navbar__logo.kbd-focus {
+  outline: none;
+  color: var(--text);
+}
+/* Logo gets no cursor — just blinks itself when selected */
+.navbar__logo.kbd-focus img {
+  animation: cursor-blink 1.1s steps(2, jump-none) infinite;
+}
+.btn-ghost.kbd-focus::before,
+.product__buy.kbd-focus::before {
+  content: "";
+  display: inline-block;
+  width: 1.4em;
+  height: 0.7em;
+  margin-right: 0.45em;
+  vertical-align: middle;
+  background: url('/assets/cursor.png') center/contain no-repeat;
+  image-rendering: pixelated;
+  animation: cursor-blink 1.1s steps(2, jump-none) infinite;
+}
+/* Media-link rows already have absolutely-positioned ::before — reveal it for kbd focus too */
+.media-link.kbd-focus::before {
+  opacity: 1;
+  animation: cursor-blink 1.1s steps(2, jump-none) infinite;
+}
+.media-link.kbd-focus {
+  background-color: rgba(255, 255, 255, 0.10);
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+/* Larger variant used on homepage */
+.btn-ghost--lg {
+  font-size: clamp(0.7rem, 0.85vw + 0.42rem, 1rem);
+}
+
+/* =========================================================================
+   Section title (used on /media)
+   ========================================================================= */
+.section-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  margin: clamp(2rem, 6vh, 4rem) auto clamp(1.5rem, 4vh, 3rem);
+  padding: 0;
+  width: fit-content;
+  max-width: calc(100% - var(--pad-page) * 2);
+  text-align: center;
+}
+
+.section-title__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 1.5vw, 1.5rem);
+}
+
+.section-title__spacer {
+  font-family: var(--font-ornate);
+  font-size: var(--fs-spacer);
+  color: var(--text);
+  line-height: 0.9;
+  /* Nudge so the ornament's optical center aligns with the heading's x-height */
+  transform: translateY(-0.05em);
+}
+
+.section-title__main {
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  line-height: 0.95;
+  color: var(--text);
+}
+
+.section-title__sub {
+  margin-top: 0.25rem;
+  font-family: var(--font-serif-italic);
+  font-size: var(--fs-subtitle);
+  font-style: italic;
+  color: var(--text);
+}
+
+/* =========================================================================
+   Media links — JRPG menu panel (/media)
+   ========================================================================= */
+.media-panel-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--pad-page) clamp(3rem, 8vh, 6rem);
+}
+
+.media-stack {
+  width: min(290px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.media-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  /* Em-based padding so the row scales with font-size.
+     Left gutter holds the JRPG cursor slot. */
+  padding: 0.7em 1.5em 0.7em 2.7em;
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.2vw + 0.45rem, 1.35rem);
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6); /* JRPG drop shadow */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  transition: background-color 0.12s ease;
+}
+
+/* JRPG cursor — sits in the left gutter, fades in on hover/focus */
+.media-link::before {
+  content: "";
+  position: absolute;
+  left: 0.55em;
+  top: 50%;
+  width: 1.3em;
+  height: 0.7em;
+  background: url('/assets/cursor.png') center/contain no-repeat;
+  image-rendering: pixelated;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+.media-link:hover::before,
+.media-link:focus-visible::before {
+  opacity: 1;
+  animation: cursor-blink 1.1s steps(2, jump-none) infinite;
+}
+.media-link:first-child { padding-top: clamp(1rem, 3vw, 1.4rem); }
+.media-link:last-child  { border-bottom: none; padding-bottom: clamp(1rem, 3vw, 1.4rem); }
+
+.media-link:hover,
+.media-link:focus-visible {
+  background-color: rgba(255, 255, 255, 0.10);
+  outline: none;
+}
+
+.media-link__icon {
+  width: 1.5em;
+  height: 1.5em;
+  flex-shrink: 0;
+  color: #ffffff;
+  filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.6));
+}
+.media-link__icon svg { width: 100%; height: 100%; display: block; }
+
+.media-link__label {
+  flex: 1;
+}
+
+/* =========================================================================
+   Shop page
+   ========================================================================= */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--pad-page) clamp(3rem, 8vh, 6rem);
+}
+
+.product {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: center;
+  transition: transform 0.25s ease;
+}
+.product:hover { transform: translateY(-2px); }
+
+.product__media {
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  position: relative;
+}
+.product__media::before {
+  /* tiny SMPTE bar ribbon at the top */
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg,
+    #c0c0c0 0 14.28%, #c0c000 14.28% 28.57%, #00c0c0 28.57% 42.85%,
+    #00c000 42.85% 57.14%, #c000c0 57.14% 71.42%, #c00000 71.42% 85.71%,
+    #0000c0 85.71% 100%);
+  opacity: 0.7;
+}
+.product__media svg {
+  width: 55%;
+  height: auto;
+  stroke: var(--text);
+  fill: none;
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 10px rgba(140,160,255,0.2));
+}
+
+.product__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.5vw + 0.75rem, 1.6rem);
+  color: var(--text);
+  line-height: 1.2;
+}
+.product__price {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1vw + 0.7rem, 1.2rem);
+  color: var(--text-soft);
+}
+.product__buy {
+  align-self: center;
+  margin-top: 0.25rem;
+}
+
+/* =========================================================================
+   Live / tour page — Bandsintown widget container
+   ========================================================================= */
+.tour-container {
+  width: 100%;
+  padding: 0 var(--pad-page) clamp(2rem, 6vh, 4rem);
+}
+
+/* Force the Bandsintown widget to use the site display font.
+   The widget renders inline DOM (not in an iframe), so our font reaches it. */
+.bit-widget,
+.bit-widget * {
+  font-family: var(--font-display) !important;
+}
+
+/* =========================================================================
+   404
+   ========================================================================= */
+.page-404 {
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--pad-page);
+  text-align: center;
+  gap: 1rem;
+}
+.page-404 h1 { font-family: var(--font-display); font-size: clamp(2.5rem, 8vw, 5rem); }
+.page-404 p  { font-family: var(--font-serif-italic); font-style: italic; }
+.page-404 a  { text-decoration: underline; text-underline-offset: 4px; }
+
+/* =========================================================================
+   CRT terminal effect — applied to every page via overlay divs
+   ========================================================================= */
+body { animation: crt-boot 1.2s ease-out forwards; }
+
+.crt-overlay { position: fixed; inset: 0; pointer-events: none; }
+
+.crt-overlay--scanlines {
+  z-index: 100;
+  background:
+    linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.20) 50%),
+    linear-gradient(90deg, rgba(255,0,0,0.045), rgba(0,255,0,0.025), rgba(0,0,255,0.045));
+  background-size: 100% 2px, 3px 100%;
+}
+.crt-overlay--flicker {
+  z-index: 101;
+  background: rgba(18,16,16,0.05);
+  opacity: 0;
+  animation: crt-flicker 0.12s infinite;
+}
+.crt-overlay--vignette {
+  z-index: 99;
+  box-shadow: inset 0 0 150px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3);
+}
+.crt-overlay--glow {
+  z-index: 1;
+  background: radial-gradient(ellipse 50% 40% at 50% 45%, rgba(100,120,255,0.04) 0%, transparent 70%);
+}
+.crt-overlay--curve {
+  inset: -2px;
+  z-index: 103;
+  border-radius: 12px;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Text on CRT pages gets a subtle chromatic aberration */
+.navbar, main, .page-404 {
+  text-shadow:
+    0.7px 0 0 rgba(255,0,0,0.045),
+   -0.7px 0 0 rgba(0,255,255,0.05);
+}
+
+@keyframes crt-boot {
+  0%   { opacity: 0; filter: brightness(0); }
+  30%  { opacity: 0.3; filter: brightness(0.4); }
+  50%  { opacity: 0.6; filter: brightness(0.7); }
+  100% { opacity: 1; filter: brightness(1); }
+}
+@keyframes crt-flicker {
+  0%,100% { opacity: 0.025; } 10% { opacity: 0.024; } 20% { opacity: 0.048; }
+  30% { opacity: 0.016; } 40% { opacity: 0.044; } 50% { opacity: 0.010; }
+  60% { opacity: 0.050; } 70% { opacity: 0.035; } 80% { opacity: 0.014; } 90% { opacity: 0.040; }
+}
+
+/* Very small screens: thin scanlines to avoid moiré */
+@media (max-width: 600px) {
+  .crt-overlay--scanlines { background-size: 100% 3px, 3px 100%; opacity: 0.6; }
+}
+
+/* Make sure interactive content sits above the glow layer */
+.navbar, main, .stage, .page-404 { position: relative; z-index: 10; }
+
+/* =========================================================================
+   Reduced motion — disable animation-heavy effects
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .crt-overlay--flicker { display: none; }
+}
+
+/* =========================================================================
+   RPG dialogue box — shown when the shop is closed
+   ========================================================================= */
+.rpg-dialogue {
+  position: fixed;
+  inset: 0;
+  z-index: 9600;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  cursor: pointer;
+  font-family: var(--font-display);
+}
+.rpg-dialogue.is-open { opacity: 1; }
+
+.rpg-dialogue__box {
+  position: relative;
+  width: min(64vw, 304px);
+  background: #000;
+  border: 1px solid #fff;
+  border-radius: 4px;
+  padding: clamp(0.64rem, 2vw, 0.92rem) clamp(0.8rem, 2.4vw, 1.2rem);
+  transform: translateY(10px);
+  transition: transform 0.18s ease;
+  animation: rpg-flicker 4s ease-in-out infinite;
+}
+.rpg-dialogue.is-open .rpg-dialogue__box { transform: translateY(0); }
+
+@keyframes rpg-flicker {
+  0%, 8%, 50%, 55%, 100% { opacity: 1; }
+  4%  { opacity: 0.9; }
+  5%  { opacity: 1; }
+  7%  { opacity: 0.94; }
+  52% { opacity: 0.92; }
+  53% { opacity: 1; }
+}
+
+.rpg-dialogue__text {
+  color: #fff;
+  font-size: clamp(0.84rem, 0.64vw + 0.72rem, 1.12rem);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  min-height: 1.5em;
+  white-space: pre-wrap;
+}
+.rpg-dialogue__caret {
+  opacity: 0.85;
+  margin-left: 1px;
+}
+
+.rpg-dialogue__next {
+  position: absolute;
+  right: clamp(0.7rem, 2vw, 1rem);
+  bottom: clamp(0.4rem, 1.5vw, 0.7rem);
+  color: #fff;
+  font-size: 0.64rem;
+  animation: rpg-bounce 0.9s ease-in-out infinite;
+}
+@keyframes rpg-bounce {
+  0%, 100% { transform: translateY(0);   opacity: 0.5; }
+  50%      { transform: translateY(3px); opacity: 1; }
+}
+
+/* Password prompt (Demos gate) */
+.rpg-dialogue__form {
+  display: flex;
+  align-items: center;
+  gap: 0.5ch;
+  margin-top: 0.6rem;
+}
+.rpg-dialogue__form[hidden] { display: none; }
+.rpg-dialogue__prompt {
+  color: #fff;
+  font-size: clamp(0.84rem, 0.64vw + 0.72rem, 1.12rem);
+  opacity: 0.85;
+}
+.rpg-dialogue__input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  caret-color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(0.84rem, 0.64vw + 0.72rem, 1.12rem);
+  letter-spacing: 0.25em;
+  padding: 0;
+}
+.rpg-dialogue__enter {
+  flex: none;
+  margin-left: auto;
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 3px;
+  font-family: var(--font-display);
+  font-size: clamp(0.78rem, 0.5vw + 0.66rem, 1rem);
+  letter-spacing: 0.08em;
+  padding: 0.35em 0.9em;
+  min-height: 40px;            /* comfortable mobile tap target */
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.rpg-dialogue__enter:hover,
+.rpg-dialogue__enter:focus-visible {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  outline: none;
+}
+.rpg-dialogue__enter:active { transform: translateY(1px); }
+
+/* Wrong-password shake */
+.rpg-dialogue__box.shake { animation: rpg-shake 0.32s ease; }
+@keyframes rpg-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+/* =========================================================================
+   Demos page — lite CMS: tracklist (left) + video viewer (right)
+   ========================================================================= */
+.demos {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vh, 4rem) var(--pad-page) clamp(3rem, 8vh, 6rem);
+}
+
+/* --- Tracklist (left) --- */
+.demos__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-track {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.7em;
+  width: 100%;
+  text-align: left;
+  /* No left gutter: the track number lines up with the logo's left edge (the "M").
+     The JRPG cursor hangs into the page gutter to the left. */
+  padding: 0.5em 1em 0.5em 0;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1vw + 0.5rem, 1.2rem);
+  line-height: 1.2;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: background-color 0.12s ease, opacity 0.12s ease;
+}
+
+/* JRPG cursor — fades in on hover/focus/active.
+   Sits to the LEFT of the number, hanging into the page gutter. */
+.demo-track::before {
+  content: "";
+  position: absolute;
+  left: -1.7em;
+  top: 0.75em;
+  width: 1.3em;
+  height: 0.7em;
+  background: url('/assets/cursor.png') center/contain no-repeat;
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+.demo-track:hover::before,
+.demo-track:focus-visible::before,
+.demo-track.is-active::before {
+  opacity: 1;
+}
+.demo-track.is-active::before {
+  animation: cursor-blink 1.1s steps(2, jump-none) infinite;
+}
+
+.demo-track {
+  opacity: 0.6;
+}
+.demo-track:hover,
+.demo-track:focus-visible {
+  opacity: 0.85;
+  outline: none;
+}
+.demo-track.is-active {
+  opacity: 1;
+}
+
+.demo-track__num {
+  flex: none;
+  font-size: 0.78em;
+  color: var(--text-soft);
+  opacity: 0.7;
+}
+.demo-track__title { flex: 1; }
+
+/* --- Viewer (right) --- */
+.demos__viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.demos__video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.demos__video iframe,
+.demos__video video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.demos__placeholder {
+  font-family: var(--font-serif-italic);
+  font-style: italic;
+  color: var(--text-soft);
+  opacity: 0.75;
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  text-align: center;
+  padding: 1rem;
+}
+
+.demos__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1.5vw + 0.9rem, 2rem);
+  line-height: 1.1;
+  color: var(--text);
+}
+.demos__desc {
+  font-family: var(--font-serif-italic);
+  font-style: italic;
+  font-size: clamp(0.95rem, 0.6vw + 0.8rem, 1.15rem);
+  color: var(--text-soft);
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Song: VFD "car-radio" spectrum player, directly under the video */
+.demos__audio {
+  margin-top: clamp(0.75rem, 2vh, 1.25rem);
+}
+.vfd {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: clamp(0.5rem, 1.2vw, 0.85rem);
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 3px;
+  box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.05),
+              0 0 14px rgba(255, 255, 255, 0.06);
+}
+
+/* Dot-matrix screen */
+.vfd__screen-wrap {
+  position: relative;
+  width: 100%;
+  height: clamp(96px, 20vw, 156px);
+  background: #000;
+  border-radius: 2px;
+  overflow: hidden;
+}
+/* faint inner vignette so the matrix reads like a real tube */
+.vfd__screen-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 120% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+.vfd__screen {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Transport row */
+.vfd__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--font-mono);
+}
+.vfd__play {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.vfd__play:hover,
+.vfd__play:focus-visible { background: #fff; color: #000; outline: none; }
+.vfd__play:focus-visible { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4); }
+
+/* Play triangle → morphs to two pause bars when playing */
+.vfd__play-icon {
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 7px 0 7px 12px;
+  border-color: transparent transparent transparent currentColor;
+  margin-left: 2px;
+}
+.vfd.is-playing .vfd__play-icon {
+  width: 10px; height: 13px;
+  border: 0;
+  margin-left: 0;
+  background:
+    linear-gradient(currentColor, currentColor) left / 3px 100% no-repeat,
+    linear-gradient(currentColor, currentColor) right / 3px 100% no-repeat;
+}
+
+.vfd__time {
+  flex: none;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.85);
+  font-variant-numeric: tabular-nums;
+  min-width: 2.6em;
+  text-align: center;
+}
+
+.vfd__seek {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;
+}
+.vfd__seek-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.vfd__seek-fill {
+  width: 0%;
+  height: 100%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+.vfd__seek-head {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+.vfd__seek:focus-visible { outline: none; }
+.vfd__seek:focus-visible .vfd__seek-track { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35); }
+
+.vfd__dl {
+  flex: none;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 3px;
+  padding: 0.34rem 0.6rem;
+  transition: background 0.15s, color 0.15s;
+}
+.vfd__dl:hover,
+.vfd__dl:focus-visible { background: #fff; color: #000; outline: none; }
+
+@media (max-width: 480px) {
+  .vfd__dl { display: none; } /* keep the transport tidy on phones */
+}
+
+/* Collapse to a single column on narrow screens */
+@media (max-width: 720px) {
+  .demos {
+    grid-template-columns: 1fr;
+  }
+  .demos__viewer { order: -1; } /* video first, tracklist below */
+  /* Page gutter is too small for a hanging cursor here — give it an inset gutter. */
+  .demo-track { padding-left: 1.9em; }
+  .demo-track::before { left: 0.3em; }
+}
+
+/* =========================================================================
+   Guest notes (under the video info on the Demos page)
+   ========================================================================= */
+.demos__notes {
+  margin-top: clamp(1.25rem, 3vh, 2rem);
+  padding-top: clamp(1rem, 2.5vh, 1.5rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  font-family: var(--font-mono);   /* whole notes section uses the mono face */
+}
+.demos__notes-head {
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 0.9vw + 0.65rem, 1.15rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.notes-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+}
+.note__body {
+  color: var(--text-soft);
+  font-size: clamp(0.9rem, 0.5vw + 0.8rem, 1.05rem);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.note__meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  opacity: 0.5;
+}
+.notes-empty {
+  font-family: var(--font-mono);
+  color: var(--text-soft);
+  opacity: 0.55;
+  font-size: 0.9rem;
+}
+
+.notes-form { display: flex; flex-direction: column; gap: 0.5rem; }
+.notes-form__input {
+  width: 100%;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  color: #fff;
+  caret-color: #fff;
+  font-family: var(--font-mono);
+  font-size: clamp(0.88rem, 0.5vw + 0.78rem, 1rem);
+  line-height: 1.4;
+  padding: 0.6em 0.7em;
+  resize: vertical;
+}
+.notes-form__input:focus-visible {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+.notes-form__row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+.notes-form__hint {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+  opacity: 0.5;
+}
+.notes-form__send {
+  flex: none;
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 0.5vw + 0.66rem, 1rem);
+  letter-spacing: 0.08em;
+  padding: 0.4em 1.1em;
+  min-height: 40px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.notes-form__send:hover,
+.notes-form__send:focus-visible {
+  background: #fff; color: #000; border-color: #fff; outline: none;
+}
+.notes-status {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+  min-height: 1em;
+}
+
+/* =========================================================================
+   Admin console (/admin) — Demos CMS
+   ========================================================================= */
+.admin {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vh, 3rem) var(--pad-page) clamp(3rem, 8vh, 6rem);
+}
+.admin__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: var(--text);
+}
+.admin__login-form { display: flex; gap: 0.5rem; margin-top: 1rem; max-width: 360px; }
+.admin__bar {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; margin-bottom: 1.5rem;
+}
+
+.admin__panel {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+.admin__h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 1.5vw + 0.8rem, 1.5rem);
+  color: var(--text);
+  margin-bottom: 0.85rem;
+}
+.admin__h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--text);
+  margin: 1.5rem 0 0.75rem;
+}
+.admin__count { color: var(--text-soft); opacity: 0.7; font-size: 0.85em; }
+
+.admin__tracks, .admin__pending { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.admin__track, .admin__pending-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+.admin__pending-item { flex-direction: column; align-items: flex-start; }
+.admin__track-label { flex: 1; min-width: 0; color: var(--text); font-size: 0.95rem; }
+.admin__track-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.admin__pending-body { color: var(--text-soft); white-space: pre-wrap; word-break: break-word; line-height: 1.45; }
+.admin__pending-meta { font-size: 0.72rem; color: var(--text); opacity: 0.55; }
+.admin__empty {
+  font-family: var(--font-serif-italic); font-style: italic;
+  color: var(--text-soft); opacity: 0.6;
+}
+
+.admin__form { display: flex; flex-direction: column; gap: 0.75rem; max-width: 520px; }
+.admin__label {
+  display: flex; flex-direction: column; gap: 0.3rem;
+  font-family: var(--font-display); font-size: 0.85rem; color: var(--text-soft);
+}
+.admin__note { font-size: 0.85rem; color: var(--text-soft); opacity: 0.7; margin-top: 0.25rem; }
+.admin__form-actions { display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; }
+
+.admin__upload {
+  border: 1px dashed var(--border-faint);
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin: 0.25rem 0;
+}
+.admin__upload-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.4rem; }
+.admin__file {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--text-soft);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.admin__file::file-selector-button {
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 3px;
+  font-family: var(--font-mono); font-size: 0.78rem;
+  padding: 0.35rem 0.6rem; margin-right: 0.6rem; cursor: pointer;
+}
+.admin__file::file-selector-button:hover { background: #fff; color: #000; }
+
+.admin__input {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  color: #fff; caret-color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  padding: 0.55em 0.7em;
+  width: 100%;
+}
+.admin__input:focus-visible { outline: none; border-color: rgba(255, 255, 255, 0.7); }
+textarea.admin__input { resize: vertical; }
+
+.admin__btn {
+  flex: none;
+  background: transparent; color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 3px;
+  font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 0.06em;
+  padding: 0.45em 1.2em; min-height: 40px; cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.admin__btn:hover, .admin__btn:focus-visible { background: #fff; color: #000; border-color: #fff; outline: none; }
+
+.admin__mini {
+  background: transparent; color: var(--text-soft);
+  border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 2px;
+  font-family: var(--font-display); font-size: 0.8rem;
+  padding: 0.25em 0.6em; min-height: 32px; cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.admin__mini:hover, .admin__mini:focus-visible { background: rgba(255,255,255,0.12); color: #fff; outline: none; }
+.admin__mini--danger:hover, .admin__mini--danger:focus-visible { background: rgba(255, 60, 60, 0.25); border-color: rgba(255,120,120,0.6); }
+
+.admin__msg {
+  font-family: var(--font-display); font-size: 0.82rem; letter-spacing: 0.03em;
+  color: var(--text-soft); min-height: 1em; margin-top: 0.5rem;
+}
+

@@ -1,0 +1,12 @@
+# Netlify / Cloudflare Pages redirect rules
+# Preserve old Webflow URLs so external links keep working.
+/tour         /live/    301
+/tour/        /live/    301
+/shows        /live/    301
+/sign-up      /         301
+/store-page   /shop/    301
+/store        /shop/    301
+/merch        /shop/    301
+
+# Fallback to 404 page
+/*  /404.html  404
