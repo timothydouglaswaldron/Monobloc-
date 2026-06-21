@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRAWLER — spell editor</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0a0c; color: #cfd2d6;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; -webkit-user-select: none; user-select: none; }
+  #app { display: flex; flex-direction: column; height: 100%; }
+  #bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #1c1f24; flex: 0 0 auto; }
+  #bar .title { color: #b06af0; font-weight: 700; letter-spacing: .14em; font-size: 12px; }
+  #bar .spacer { flex: 1; }
+  #bar input[type=text] { background: #121519; border: 1px solid #2a2f36; color: #cfd2d6; border-radius: 5px; padding: 5px 8px; font: inherit; font-size: 12px; width: 130px; }
+  button, select { background: #15191e; border: 1px solid #2a2f36; color: #cfd2d6; border-radius: 5px; padding: 6px 11px; font: inherit; font-size: 12px; cursor: pointer; }
+  button:hover { border-color: #3a4049; }
+  button.go { border-color: #6b4fb0; color: #b06af0; }
+  #main { display: flex; flex: 1; min-height: 0; }
+  #form { width: 300px; flex: 0 0 auto; border-right: 1px solid #1c1f24; padding: 12px; overflow-y: auto; }
+  .fld { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .fld label { width: 96px; font-size: 11px; color: #8a9098; flex: 0 0 auto; }
+  .fld input[type=range] { flex: 1; }
+  .fld input[type=number] { width: 56px; background: #121519; border: 1px solid #2a2f36; color: #cfd2d6; border-radius: 4px; padding: 3px 5px; font: inherit; font-size: 11px; }
+  .fld input[type=color] { width: 40px; height: 26px; border: 1px solid #2a2f36; border-radius: 4px; background: none; padding: 0; }
+  .fld select { flex: 1; }
+  #stage { flex: 1; position: relative; min-width: 0; display: grid; place-items: center; background: #0a0a0c; }
+  #pv { image-rendering: pixelated; background: #0d0f12; box-shadow: 0 0 0 1px #1c1f24; }
+  #hint { position: absolute; bottom: 10px; left: 0; right: 0; text-align: center; font-size: 11px; color: #5a5f66; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="bar">
+    <span class="title">SPELL EDITOR</span>
+    <input id="name" type="text" />
+    <span class="spacer"></span>
+    <button id="new">New</button>
+    <button id="load">Load</button>
+    <button id="save">Save</button>
+    <button id="use" class="go">Use &amp; back &rsaquo;</button>
+  </div>
+  <div id="main">
+    <div id="form"></div>
+    <div id="stage">
+      <canvas id="pv" width="360" height="240"></canvas>
+      <div id="hint">live preview — caster fires the spell at a dummy on a loop</div>
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/spells.js"></script>
+</body>
+</html>

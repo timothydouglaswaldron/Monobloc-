@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>BRAWLER — choose your fighter</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #0a0a0c; color: #cfd2d6;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; -webkit-user-select: none; user-select: none; }
+  #app { max-width: 1000px; margin: 0 auto; padding: 22px 18px 120px; display: flex; gap: 26px; align-items: flex-start; }
+  #left { flex: 1; min-width: 0; }
+  #right { width: 300px; flex: 0 0 auto; position: sticky; top: 22px; }
+
+  .bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .bar a.back { color: #5a5f66; text-decoration: none; font-size: 12px; }
+  .bar h1 { margin: 0; font-size: 14px; letter-spacing: .16em; color: #54e0c8; }
+  h2 { font-size: 10px; letter-spacing: .16em; color: #5a5f66; text-transform: uppercase; margin: 20px 0 10px; }
+  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  label { font-size: 11px; color: #6a7078; width: 50px; }
+  input[type=text] { flex: 1; max-width: 260px; background: #121519; border: 1px solid #2a2f36; color: #cfd2d6;
+    border-radius: 6px; padding: 8px 10px; font: inherit; font-size: 13px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+  .card { border: 1px solid #1c1f24; border-radius: 9px; padding: 12px 8px; background: #0d0f12; cursor: pointer;
+    text-align: center; transition: border-color .12s, background .12s; }
+  .card:hover { border-color: #2f3a44; }
+  .card.sel { border-color: #54e0c8; background: #11201d; }
+  .card canvas { image-rendering: pixelated; height: 64px; display: block; margin: 0 auto 8px; }
+  .card .nm { font-size: 12px; color: #cfd2d6; }
+
+  .spell { border: 1px solid #1c1f24; border-radius: 9px; padding: 11px 13px; background: #0d0f12; cursor: pointer;
+    transition: border-color .12s, background .12s; }
+  .spell:hover { border-color: #2f3a44; }
+  .spell.sel { border-color: #54e0c8; background: #11201d; }
+  .spell .nm { font-size: 13px; font-weight: 600; }
+  .spell .meta { font-size: 11px; color: #6a7078; margin-top: 3px; }
+  .spell .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  /* preview pane */
+  #preview { width: 100%; aspect-ratio: 5 / 6; image-rendering: pixelated;
+    background: radial-gradient(120% 80% at 50% 30%, #14181f 0%, #0c0d10 70%);
+    border: 1px solid #1c1f24; border-radius: 12px; display: block; }
+  #pvlabel { text-align: center; font-size: 11px; letter-spacing: .18em; color: #54e0c8; text-transform: uppercase; margin-top: 10px; min-height: 14px; }
+  #pvhint { text-align: center; font-size: 11px; color: #5a5f66; margin-top: 4px; }
+
+  #go { position: fixed; left: 0; right: 0; bottom: 0; padding: 16px; background: linear-gradient(transparent, #0a0a0c 40%);
+    display: flex; justify-content: center; z-index: 5; }
+  #go button { background: #54e0c8; color: #0a0a0c; border: 0; border-radius: 8px; font: inherit; font-weight: 700;
+    font-size: 16px; letter-spacing: .14em; padding: 14px 48px; cursor: pointer; }
+  #go button:disabled { opacity: .4; cursor: default; }
+
+  @media (max-width: 720px) {
+    #app { flex-direction: column; gap: 16px; }
+    #right { width: 100%; position: static; order: -1; }
+    #preview { max-width: 260px; margin: 0 auto; }
+  }
+</style>
+  <script type="module" crossorigin src="/brawler/assets/select-3gZ5GuBK.js"></script>
+  <link rel="modulepreload" crossorigin href="/brawler/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/brawler/assets/char-CHikaHY4.js">
+  <link rel="modulepreload" crossorigin href="/brawler/assets/spell-ShX6F5Wh.js">
+</head>
+<body>
+<div id="app">
+  <div id="left">
+    <div class="bar"><a class="back" href="./index.html">&lsaquo; back</a><h1>CHOOSE YOUR FIGHTER</h1></div>
+    <div class="row"><label>Name</label><input id="name" type="text" maxlength="10" placeholder="your name" /></div>
+    <h2>Character</h2>
+    <div class="grid" id="chars"></div>
+    <h2>Spell &nbsp;(B button)</h2>
+    <div class="grid" id="spells" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));"></div>
+  </div>
+
+  <div id="right">
+    <canvas id="preview" width="250" height="300"></canvas>
+    <div id="pvlabel"></div>
+    <div id="pvhint">pick a character to preview</div>
+  </div>
+</div>
+
+<div id="go"><button id="join" disabled>Join lobby &rsaquo;</button></div>
+
+</body>
+</html>

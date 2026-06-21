@@ -1,0 +1,12 @@
+name = "brawler"
+main = "worker/server.js"
+compatibility_date = "2024-11-01"
+
+# One Durable Object per room. Free-plan compatible (SQLite-backed).
+[[durable_objects.bindings]]
+name = "BrawlerRoom"
+class_name = "BrawlerRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["BrawlerRoom"]

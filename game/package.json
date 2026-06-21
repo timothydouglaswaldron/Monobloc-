@@ -1,0 +1,21 @@
+{
+  "name": "brawler",
+  "private": true,
+  "type": "module",
+  "description": "Pixel brawler — game + visual map editor. Builds into ../public/brawler.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "wrangler dev --port 1999",
+    "deploy:server": "wrangler deploy"
+  },
+  "devDependencies": {
+    "vite": "^6.0.7",
+    "wrangler": "^4.103.0"
+  },
+  "dependencies": {
+    "partyserver": "^0.5.8",
+    "partysocket": "^1.2.0"
+  }
+}

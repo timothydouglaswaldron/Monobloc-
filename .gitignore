@@ -4,3 +4,8 @@ node_modules/
 .DS_Store
 .env*
 *.log
+.vercel
+
+# local dev state/cache
+game/.partykit/
+game/.wrangler/
