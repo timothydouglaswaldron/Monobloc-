@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>BRAWLER — multiplayer</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #0a0a0c; color: #cfd2d6;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    -webkit-user-select: none; user-select: none;
+  }
+  #wrap { position: fixed; inset: 0; display: grid; place-items: center; }
+  canvas { image-rendering: pixelated; background: #0a0a0c; box-shadow: 0 0 0 1px #1c1f24, 0 24px 80px -20px #000; touch-action: none; }
+  #hint { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); font-size: 11px; letter-spacing: .1em; color: #5a5f66; white-space: nowrap; }
+  #hint b { color: #9aa0a6; }
+
+  /* lobby overlay */
+  #lobby {
+    position: fixed; inset: 0; background: rgba(8,9,11,0.92);
+    display: grid; place-items: center; z-index: 10;
+  }
+  #panel { width: 440px; max-width: 92vw; border: 1px solid #1c1f24; border-radius: 10px; padding: 22px; background: #0d0f12; }
+  #panel h1 { margin: 0 0 4px; font-size: 14px; letter-spacing: .18em; color: #54e0c8; }
+  #panel .sub { color: #5a5f66; font-size: 12px; margin-bottom: 18px; }
+  #panel .code { color: #cfd2d6; }
+  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  label { font-size: 11px; color: #6a7078; width: 56px; }
+  input[type=text] { flex: 1; background: #121519; border: 1px solid #2a2f36; color: #cfd2d6; border-radius: 5px; padding: 6px 8px; font: inherit; font-size: 12px; }
+  input[type=color] { width: 34px; height: 28px; border: 1px solid #2a2f36; border-radius: 5px; background: none; padding: 0; }
+  button { background: #15191e; border: 1px solid #2a2f36; color: #cfd2d6; border-radius: 5px; padding: 6px 11px; font: inherit; font-size: 12px; cursor: pointer; }
+  button:hover { border-color: #3a4049; }
+  button.go { border-color: #2f6b60; color: #54e0c8; }
+  button:disabled { opacity: .4; cursor: default; }
+  #players { list-style: none; margin: 6px 0 16px; padding: 0; }
+  #players li { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12px; border-bottom: 1px solid #14171b; }
+  #players .dot { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+  #players .you { color: #54e0c8; }
+  #players .cpu { color: #6a7078; }
+  #players .host { margin-left: auto; font-size: 9px; color: #5a5f66; letter-spacing: .12em; }
+  .ctl { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+  .ctl .spacer { flex: 1; }
+  #note { font-size: 11px; color: #5a5f66; min-height: 14px; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="game"></canvas></div>
+<div id="hint"><b>D-PAD</b> move &middot; <b>UP</b> jump &middot; <b>A</b> combo &middot; <b>B</b> special</div>
+
+<div id="lobby">
+  <div id="panel">
+    <h1>MULTIPLAYER</h1>
+    <div class="sub">room <span class="code" id="roomCode">—</span> &middot; share this link to invite</div>
+
+    <div class="row"><label>Name</label><input id="name" type="text" maxlength="10" /></div>
+    <div class="row"><label>Fighter</label>
+      <span id="loadout" class="sub" style="margin:0;flex:1;color:#9aa0a6"></span>
+      <a id="changeLink" href="./select.html"
+         style="color:#54e0c8;text-decoration:none;font-size:12px">change &rsaquo;</a></div>
+
+    <h4 style="font-size:10px;letter-spacing:.14em;color:#5a5f66;margin:14px 0 4px">PLAYERS</h4>
+    <ul id="players"></ul>
+
+    <div class="ctl">
+      <button id="cpuMinus">CPU −</button>
+      <span id="cpuCount" class="sub" style="margin:0">0 CPU</span>
+      <button id="cpuPlus">CPU +</button>
+      <span class="spacer"></span>
+      <button id="start" class="go">Start match</button>
+    </div>
+    <div id="note"></div>
+  </div>
+</div>
+
+<div id="results" style="position:fixed;inset:0;background:rgba(8,9,11,0.92);display:none;place-items:center;z-index:11">
+  <div id="panel" style="text-align:center">
+    <div class="sub" style="margin-bottom:6px">MATCH OVER</div>
+    <h1 id="winner" style="font-size:26px;margin:0 0 22px">—</h1>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button id="rematch" class="go" style="padding:12px 22px">Rematch</button>
+      <button id="leave" style="padding:12px 22px">Leave</button>
+    </div>
+    <div id="rematchNote" class="sub" style="margin:14px 0 0;min-height:14px"></div>
+  </div>
+</div>
+
+<script type="module" src="/src/mp.js"></script>
+</body>
+</html>

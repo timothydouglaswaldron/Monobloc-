@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRAWLER — character creator</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #0a0a0c; color: #cfd2d6;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    -webkit-user-select: none; user-select: none;
+  }
+  #app { display: flex; flex-direction: column; height: 100%; }
+  #bar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 8px 12px; border-bottom: 1px solid #1c1f24; flex: 0 0 auto;
+  }
+  #bar .title { color: #54e0c8; font-weight: 700; letter-spacing: .14em; font-size: 12px; }
+  #bar .spacer { flex: 1; }
+  #bar input[type=text] {
+    background: #121519; border: 1px solid #2a2f36; color: #cfd2d6;
+    border-radius: 5px; padding: 5px 8px; font: inherit; font-size: 12px; width: 120px;
+  }
+  #bar .dim { color: #5a5f66; font-size: 11px; }
+  button {
+    background: #15191e; border: 1px solid #2a2f36; color: #cfd2d6;
+    border-radius: 5px; padding: 6px 11px; font: inherit; font-size: 12px; cursor: pointer;
+  }
+  button:hover { border-color: #3a4049; background: #1b2026; }
+  button.go { border-color: #2f6b60; color: #54e0c8; }
+
+  #main { display: flex; flex: 1; min-height: 0; }
+  #side { width: 188px; flex: 0 0 auto; border-right: 1px solid #1c1f24; padding: 12px 12px; overflow-y: auto; }
+  #side h4 { margin: 16px 0 8px; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #5a5f66; font-weight: 600; }
+  #side h4:first-child { margin-top: 0; }
+
+  #colorRow { display: flex; align-items: center; gap: 8px; }
+  #color { width: 38px; height: 30px; padding: 0; border: 1px solid #2a2f36; border-radius: 5px; background: none; cursor: pointer; }
+  #swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-top: 8px; }
+  .sw { width: 100%; aspect-ratio: 1; border-radius: 4px; border: 1px solid #2a2f36; cursor: pointer; }
+  .sw.sel { outline: 2px solid #fff; outline-offset: 1px; }
+  .sw.erase {
+    background:
+      linear-gradient(45deg,#333 25%,transparent 25%,transparent 75%,#333 75%),
+      linear-gradient(45deg,#333 25%,#111 25%,#111 75%,#333 75%);
+    background-size: 8px 8px; background-position: 0 0, 4px 4px;
+  }
+  #tools button { width: 100%; text-align: left; margin-bottom: 5px; }
+  #tools button.sel { border-color: #54e0c8; color: #fff; background: #16201e; }
+
+  #preview { margin-top: 8px; display: flex; gap: 14px; align-items: flex-end; }
+  #preview canvas { image-rendering: pixelated; background: #0d0f12; border: 1px solid #1c1f24; }
+  #preview .lab { font-size: 9px; color: #5a5f66; text-align: center; margin-top: 4px; letter-spacing: .1em; }
+
+  #stage { flex: 1; position: relative; min-width: 0; background: #0a0a0c; }
+  #c { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  #help { position: absolute; left: 12px; bottom: 10px; font-size: 11px; color: #4a4f57; letter-spacing: .06em; pointer-events: none; }
+  #status { position: absolute; right: 12px; bottom: 10px; font-size: 11px; color: #6a7078; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="bar">
+    <span class="title">CHARACTER CREATOR</span>
+    <input id="name" type="text" title="character name" />
+    <span class="dim" id="size"></span>
+    <span class="spacer"></span>
+    <button id="new">New</button>
+    <button id="open">Load</button>
+    <button id="save">Save</button>
+    <button id="play" class="go">Play &rsaquo;</button>
+  </div>
+  <div id="main">
+    <div id="side">
+      <h4>Color</h4>
+      <div id="colorRow"><input id="color" type="color" value="#54e0c8" /><span class="dim" id="hex">#54e0c8</span></div>
+      <div id="swatches"></div>
+      <h4>Tool</h4>
+      <div id="tools">
+        <button id="t-paint" class="sel">Paint</button>
+        <button id="t-erase">Erase</button>
+        <button id="t-pick">Eyedropper</button>
+      </div>
+      <h4>Preview</h4>
+      <div id="preview">
+        <div><canvas id="pv"></canvas><div class="lab">x6</div></div>
+        <div><canvas id="pvg"></canvas><div class="lab">in-game</div></div>
+      </div>
+    </div>
+    <div id="stage">
+      <canvas id="c"></canvas>
+      <div id="help">left: paint &middot; right / alt: erase &middot; space+drag or middle: pan &middot; wheel: zoom &middot; X: flip preview</div>
+      <div id="status"></div>
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/creator.js"></script>
+</body>
+</html>
